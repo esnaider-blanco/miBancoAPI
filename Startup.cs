@@ -1,4 +1,5 @@
 using MiBancoAPI.Models;
+using MiBancoAPI.Services.ServicioDivisa;
 using MiBancoAPI.Services.ServicioUsuario;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,7 +29,7 @@ namespace MiBancoAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers().AddXmlSerializerFormatters();
             services.AddSwaggerGen();
             services.AddDbContext<db_miViajeCR_miBancoContext>(o =>
             {
@@ -36,6 +37,7 @@ namespace MiBancoAPI
             });
 
             services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
+            services.AddScoped<IDivisaRepositorio, DivisaRepositorio>();
 
             services.AddCors(o =>
             {

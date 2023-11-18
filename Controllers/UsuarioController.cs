@@ -89,5 +89,19 @@ namespace MiBancoAPI.Controllers
 
             return Ok(await _usuarioRepositorio.ObtieneCuentasBancariasPorIdUsuario(idUsuario));
         }
+
+        [HttpGet("api/obtenerTokenPorIdUsuario/{idUsuario}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ObtenerTokenPorIdUsuario(int idUsuario)
+        {
+            if (idUsuario == null || idUsuario <= 0)
+            {
+                return BadRequest();
+            }
+
+            return Ok(await _usuarioRepositorio.ObtieneTokenPorIdUsuario(idUsuario));
+        }
     }
 }

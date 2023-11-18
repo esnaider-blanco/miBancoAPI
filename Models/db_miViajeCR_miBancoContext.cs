@@ -18,6 +18,7 @@ namespace MiBancoAPI.Models
         }
 
         public virtual DbSet<CuentasBancaria> CuentasBancarias { get; set; }
+        public virtual DbSet<CuentaBancariaCustom> CuentaBancariaCustom { get; set; }
         public virtual DbSet<HistoricoLogin> HistoricoLogins { get; set; }
         public virtual DbSet<TiposTransaccion> TiposTransaccions { get; set; }
         public virtual DbSet<Transaccione> Transacciones { get; set; }

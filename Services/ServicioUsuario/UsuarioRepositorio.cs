@@ -1,6 +1,8 @@
 ﻿using MiBancoAPI.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,7 +42,7 @@ namespace MiBancoAPI.Services.ServicioUsuario
                     new SqlParameter { ParameterName = "@DbRespuesta", SqlDbType = System.Data.SqlDbType.VarChar, Size = 100, Direction = System.Data.ParameterDirection.Output}
                 };
 
-                var affectedRows = _dbContext.Database.ExecuteSqlRaw(sql, parms.ToArray());                
+                var affectedRows = _dbContext.Database.ExecuteSqlRaw(sql, parms.ToArray());
                 if (parms[5].Value != DBNull.Value)
                 {
                     response = parms[5].Value.ToString();
@@ -96,7 +98,7 @@ namespace MiBancoAPI.Services.ServicioUsuario
 
                 List<SqlParameter> parms = new List<SqlParameter>
                 {
-                    new SqlParameter { ParameterName = "@IdUsuario", Value=idUsuario},                    
+                    new SqlParameter { ParameterName = "@IdUsuario", Value=idUsuario},
                     new SqlParameter { ParameterName = "@DbRespuesta", SqlDbType = System.Data.SqlDbType.VarChar, Size = 100, Direction = System.Data.ParameterDirection.Output}
                 };
 
@@ -147,11 +149,48 @@ namespace MiBancoAPI.Services.ServicioUsuario
             return response;
         }
 
-        public async Task<List<CuentasBancaria>> ObtieneCuentasBancariasPorIdUsuario(int idUsuario)
+        public async Task<List<CuentaBancariaCustom>> ObtieneCuentasBancariasPorIdUsuario(int idUsuario)
         {
-            return await _dbContext.CuentasBancarias
-                .FromSqlRaw<CuentasBancaria>("spObtieneCuentasPorIdUsuario {0}", idUsuario)
+            return await _dbContext.CuentaBancariaCustom
+                .FromSqlRaw<CuentaBancariaCustom>("spObtieneCuentasPorIdUsuario {0}", idUsuario)
                 .ToListAsync();
+        }
+
+        public async Task<string> ObtieneTokenPorIdUsuario(int idUsuario)
+        {
+            try
+            {
+                string sql = @"exec [spObtieneToken] 
+                                @IdUsuario,
+                                @DbRespuesta OUTPUT";
+                List<SqlParameter> parms = new List<SqlParameter>
+                {
+                    new SqlParameter { ParameterName = "@IdUsuario", Value=idUsuario},
+                    new SqlParameter { ParameterName = "@DbRespuesta", SqlDbType = System.Data.SqlDbType.VarChar, Size = 100, Direction = System.Data.ParameterDirection.Output}
+                };
+
+                var affectedRows = _dbContext.Database.ExecuteSqlRaw(sql, parms.ToArray());
+                if (parms[1].Value != DBNull.Value)
+                {
+                    var jsonResult = new
+                    {
+                        token = parms[1].Value
+                    };
+                    return JsonConvert.SerializeObject(jsonResult);
+                }
+                else
+                {
+                    var jsonResult = new
+                    {
+                        token = ""
+                    };
+                    return JsonConvert.SerializeObject(jsonResult);
+                }
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
         }
     }
 }

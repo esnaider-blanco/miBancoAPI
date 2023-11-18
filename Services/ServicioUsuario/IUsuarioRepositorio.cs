@@ -16,7 +16,9 @@ namespace MiBancoAPI.Services.ServicioUsuario
 
         Task<string> InsertaCuentaBancaria(int idUsuario, decimal saldoInicial, bool esCuentaPrincipal);
 
-        Task<List<CuentasBancaria>> ObtieneCuentasBancariasPorIdUsuario(int idUsuario);
+        Task<List<CuentaBancariaCustom>> ObtieneCuentasBancariasPorIdUsuario(int idUsuario);
+
+        Task<string> ObtieneTokenPorIdUsuario(int idUsuario);
 
     }
 }
