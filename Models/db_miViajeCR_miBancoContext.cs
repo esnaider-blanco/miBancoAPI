@@ -22,6 +22,7 @@ namespace MiBancoAPI.Models
         public virtual DbSet<HistoricoLogin> HistoricoLogins { get; set; }
         public virtual DbSet<TiposTransaccion> TiposTransaccions { get; set; }
         public virtual DbSet<Transaccione> Transacciones { get; set; }
+        public virtual DbSet<TransaccionCustom> TransaccionCustom { get; set; }
         public virtual DbSet<Usuario> Usuarios { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

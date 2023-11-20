@@ -1,7 +1,4 @@
-﻿using MiBancoAPI.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Threading.Tasks;
 
 namespace MiBancoAPI.Services.ServicioUsuario
@@ -14,11 +11,6 @@ namespace MiBancoAPI.Services.ServicioUsuario
 
         Task<string> LogoutUsuario(int idUsuario);
 
-        Task<string> InsertaCuentaBancaria(int idUsuario, decimal saldoInicial, bool esCuentaPrincipal);
-
-        Task<List<CuentaBancariaCustom>> ObtieneCuentasBancariasPorIdUsuario(int idUsuario);
-
         Task<string> ObtieneTokenPorIdUsuario(int idUsuario);
-
     }
 }

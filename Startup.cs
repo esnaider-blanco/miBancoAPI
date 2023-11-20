@@ -1,4 +1,5 @@
 using MiBancoAPI.Models;
+using MiBancoAPI.Services.ServicioCuentaBancaria;
 using MiBancoAPI.Services.ServicioDivisa;
 using MiBancoAPI.Services.ServicioUsuario;
 using Microsoft.AspNetCore.Builder;
@@ -30,7 +31,11 @@ namespace MiBancoAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers().AddXmlSerializerFormatters();
-            services.AddSwaggerGen();
+            services.AddSwaggerGen( c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "miBancoApi", Version = "v1" });
+                c.ResolveConflictingActions(apiDesc => apiDesc.First());
+            });
             services.AddDbContext<db_miViajeCR_miBancoContext>(o =>
             {
                 o.UseSqlServer(Configuration.GetConnectionString("SqlConnection"));
@@ -38,6 +43,7 @@ namespace MiBancoAPI
 
             services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
             services.AddScoped<IDivisaRepositorio, DivisaRepositorio>();
+            services.AddScoped<ICuentaBancariaRepositorio, CuentaBancariaRepositorio>();
 
             services.AddCors(o =>
             {
@@ -55,18 +61,15 @@ namespace MiBancoAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseDeveloperExceptionPage();
+
             app.UseCors("AllowOrigin");
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "miBanco Api v1");
-                c.DocumentTitle = "miBanco API";
+                c.SwaggerEndpoint("./v1/swagger.json", "miBancoApi v1");
+                c.DocumentTitle = "miBancoAPI";
             });
-
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
 
             app.UseHttpsRedirection();
 

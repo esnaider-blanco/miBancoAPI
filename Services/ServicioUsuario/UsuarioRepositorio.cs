@@ -2,10 +2,8 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace MiBancoAPI.Services.ServicioUsuario
@@ -114,47 +112,7 @@ namespace MiBancoAPI.Services.ServicioUsuario
                 response = e.Message;
             }
             return response;
-        }
-
-        public async Task<string> InsertaCuentaBancaria(int idUsuario, decimal saldoInicial, bool esCuentaPrincipal)
-        {
-            string response = string.Empty;
-            try
-            {
-                string sql = @"exec [spInsertaCuentaBancaria] 
-                                @IdUsuario,                              
-                                @SaldoInicial,
-                                @EsCuentaPrincipal,
-                                @DbRespuesta OUTPUT";
-
-                List<SqlParameter> parms = new List<SqlParameter>
-                {
-                    new SqlParameter { ParameterName = "@IdUsuario", Value=idUsuario},
-                    new SqlParameter { ParameterName = "@SaldoInicial", Value=saldoInicial},
-                    new SqlParameter { ParameterName = "@EsCuentaPrincipal", Value=esCuentaPrincipal},
-                    new SqlParameter { ParameterName = "@DbRespuesta", SqlDbType = System.Data.SqlDbType.VarChar, Size = 100, Direction = System.Data.ParameterDirection.Output}
-                };
-
-                var affectedRows = _dbContext.Database.ExecuteSqlRaw(sql, parms.ToArray());
-                if (parms[3].Value != DBNull.Value)
-                {
-                    response = parms[3].Value.ToString();
-                }
-
-            }
-            catch (Exception e)
-            {
-                response = e.Message;
-            }
-            return response;
-        }
-
-        public async Task<List<CuentaBancariaCustom>> ObtieneCuentasBancariasPorIdUsuario(int idUsuario)
-        {
-            return await _dbContext.CuentaBancariaCustom
-                .FromSqlRaw<CuentaBancariaCustom>("spObtieneCuentasPorIdUsuario {0}", idUsuario)
-                .ToListAsync();
-        }
+        }        
 
         public async Task<string> ObtieneTokenPorIdUsuario(int idUsuario)
         {
