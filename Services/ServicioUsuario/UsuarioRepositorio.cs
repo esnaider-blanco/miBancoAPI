@@ -112,7 +112,34 @@ namespace MiBancoAPI.Services.ServicioUsuario
                 response = e.Message;
             }
             return response;
-        }        
+        }
+
+        public async Task<string> ObtieneIdUsuarioPorCorreoElectronico(string correoElectronico)
+        {
+            string response = string.Empty;
+            try
+            {
+                string sql = @"exec [spObtieneIdUsuarioPorCorreoElectronico] 
+                                @CorreoElectronico,
+                                @DbRespuesta OUTPUT";
+                List<SqlParameter> parms = new List<SqlParameter>
+                {
+                    new SqlParameter { ParameterName = "@CorreoElectronico", Value=correoElectronico},
+                    new SqlParameter { ParameterName = "@DbRespuesta", SqlDbType = System.Data.SqlDbType.VarChar, Size = 100, Direction = System.Data.ParameterDirection.Output}
+                };
+
+                var affectedRows = _dbContext.Database.ExecuteSqlRaw(sql, parms.ToArray());
+                if (parms[1].Value != DBNull.Value)
+                {
+                    response = parms[1].Value.ToString();
+                }
+            }
+            catch (Exception e)
+            {
+                response = e.Message;
+            }
+            return response;
+        }
 
         public async Task<string> ObtieneTokenPorIdUsuario(int idUsuario)
         {

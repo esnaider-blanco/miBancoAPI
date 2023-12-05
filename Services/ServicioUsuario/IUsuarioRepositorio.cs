@@ -12,5 +12,7 @@ namespace MiBancoAPI.Services.ServicioUsuario
         Task<string> LogoutUsuario(int idUsuario);
 
         Task<string> ObtieneTokenPorIdUsuario(int idUsuario);
+
+        Task<string> ObtieneIdUsuarioPorCorreoElectronico(string correoElectronico);
     }
 }

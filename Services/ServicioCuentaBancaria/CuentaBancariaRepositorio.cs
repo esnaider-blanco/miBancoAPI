@@ -121,5 +121,35 @@ namespace MiBancoAPI.Services.ServicioCuentaBancaria
             .FromSqlRaw<TransaccionCustom>("spObtieneTransaccionesPorIdCuentaBancaria {0}", idCuentaBancaria)
             .ToListAsync();
         }
+
+        public async Task<string> ActualizaCuentaPrincipal(int idCuentaBancaria, int idUsuario, bool esCuentaPrincipal)
+        {
+            string response = string.Empty;
+            try
+            {
+                string sql = @"exec [spActualizaCuentaPrincipal]                                 
+                                @IdCuentaBancaria,                              
+                                @IdUsuario,
+                                @EsCuentaPrincipal";
+
+                List<SqlParameter> parms = new List<SqlParameter>
+                {
+                    new SqlParameter { ParameterName = "@IdNotificacion", Value=idCuentaBancaria},
+                    new SqlParameter { ParameterName = "@FueLeida", Value=idUsuario},
+                    new SqlParameter { ParameterName = "@FueLeida", Value=esCuentaPrincipal}
+                };
+
+                var affectedRows = _dbContext.Database.ExecuteSqlRaw(sql, parms.ToArray());
+                if (affectedRows > 0)
+                {
+                    response = "La cuenta bancaria principal se actualizo exitosamente.";
+                }
+            }
+            catch (Exception e)
+            {
+                response = e.Message;
+            }
+            return response;
+        }
     }
 }
