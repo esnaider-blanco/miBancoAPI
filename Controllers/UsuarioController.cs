@@ -42,9 +42,11 @@ namespace MiBancoAPI.Controllers
             if (result.Contains("IdUsuario"))
             {
                 string[] splitResponse = result.Split(':');
-                string tokenActual = await _usuarioRepositorio.ObtieneTokenPorIdUsuario(Convert.ToInt32(splitResponse[1]));
+                string jsonResponse = await _usuarioRepositorio.ObtieneTokenPorIdUsuario(Convert.ToInt32(splitResponse[1]));
+                dynamic data = JObject.Parse(jsonResponse);
+                string dbToken = data.token;
 
-                _emailHelper.EnviarCorreoElectronico(correoElectronico, "miBancoCR | Codigo de verificación", "Tu código es: \n " + tokenActual);
+                _emailHelper.EnviarCorreoElectronico(correoElectronico, "miBancoCR | Codigo de verificación", "Tu código es: \n " + dbToken);
             }
 
             return Ok(result);
@@ -59,17 +61,6 @@ namespace MiBancoAPI.Controllers
             }
 
             return Ok(await _usuarioRepositorio.LogoutUsuario(idUsuario));
-        }
-
-        [HttpGet("api/obtenerTokenPorIdUsuario/{idUsuario}")]
-        public async Task<IActionResult> ObtenerTokenPorIdUsuario(int idUsuario)
-        {
-            if (idUsuario == null || idUsuario <= 0)
-            {
-                return BadRequest();
-            }
-
-            return Ok(await _usuarioRepositorio.ObtieneTokenPorIdUsuario(idUsuario));
         }
 
         [HttpPost("api/validarToken")]

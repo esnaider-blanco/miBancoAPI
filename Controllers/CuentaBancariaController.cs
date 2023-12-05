@@ -1,5 +1,7 @@
 ﻿using MiBancoAPI.Services.ServicioCuentaBancaria;
+using MiBancoAPI.Services.ServicioUsuario;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace MiBancoAPI.Controllers
@@ -8,9 +10,12 @@ namespace MiBancoAPI.Controllers
     public class CuentaBancariaController : Controller
     {
         private readonly ICuentaBancariaRepositorio _cuentaBancariaRepositorio;
-        public CuentaBancariaController(ICuentaBancariaRepositorio cuentaBancariaRepositorio)
+        private readonly IUsuarioRepositorio _usuarioRepositorio;
+
+        public CuentaBancariaController(ICuentaBancariaRepositorio cuentaBancariaRepositorio, IUsuarioRepositorio usuarioRepositorio)
         {
             _cuentaBancariaRepositorio = cuentaBancariaRepositorio;
+            _usuarioRepositorio = usuarioRepositorio;
         }
 
         [HttpPost("api/crearCuentaBancaria")]
@@ -57,6 +62,25 @@ namespace MiBancoAPI.Controllers
             return Ok(await _cuentaBancariaRepositorio.ObtieneCuentasBancariasPorIdUsuario(idUsuario));
         }
 
+        [HttpGet("api/obtenerCuentasBancariasPorCorreoElectronico/{correoElectronico}")]
+        public async Task<IActionResult> ObtenerCuentasBancariasPorCorreoElectronico(string correoElectronico)
+        {
+            if (String.IsNullOrEmpty(correoElectronico))
+            {
+                return BadRequest();
+            }
+
+            string usuarioResult = await _usuarioRepositorio.ObtieneIdUsuarioPorCorreoElectronico(correoElectronico);
+            if (usuarioResult.Contains("electronico"))
+            {
+                return Ok(usuarioResult);
+            }
+            else
+            {
+                return Ok(await _cuentaBancariaRepositorio.ObtieneCuentasBancariasPorIdUsuario(Convert.ToInt32(usuarioResult)));
+            }            
+        }
+
         [HttpGet("api/obtenerTransaccionesPorIdCuenta/{idCuentaBancaria}")]
         public async Task<IActionResult> ObtenerTransaccionesPorIdCuenta(int idCuentaBancaria)
         {
@@ -66,6 +90,17 @@ namespace MiBancoAPI.Controllers
             }
 
             return Ok(await _cuentaBancariaRepositorio.ObtieneTransaccionesPorIdCuenta(idCuentaBancaria));
+        }
+
+        [HttpPut("api/actualizaCuentaPrincipal")]
+        public async Task<IActionResult> ActualizaCuentaPrincipal(int idCuentaBancaria, int idUsuario, bool esCuentaPrincipal)
+        {
+            if (idCuentaBancaria == null || idUsuario == null || esCuentaPrincipal == null)
+            {
+                return BadRequest("Revisa los parametros");
+            }
+
+            return Ok(await _cuentaBancariaRepositorio.ActualizaCuentaPrincipal(idCuentaBancaria, idUsuario, esCuentaPrincipal));
         }
     }
 }

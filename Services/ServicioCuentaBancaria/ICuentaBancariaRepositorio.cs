@@ -15,5 +15,7 @@ namespace MiBancoAPI.Services.ServicioCuentaBancaria
         Task<List<CuentaBancariaCustom>> ObtieneCuentasBancariasPorIdUsuario(int idUsuario);
 
         Task<List<TransaccionCustom>> ObtieneTransaccionesPorIdCuenta(int idCuentaBancaria);
+
+        Task<string> ActualizaCuentaPrincipal(int idCuentaBancaria, int idUsuario, bool esCuentaPrincipal);
     }
 }
